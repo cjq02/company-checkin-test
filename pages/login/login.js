@@ -1,6 +1,8 @@
 const storage = require('../../utils/storage')
 const api = require('../../utils/api')
 
+const app = getApp()
+
 Page({
   data: {
     role: storage.ROLE.EMPLOYEE,
@@ -8,6 +10,7 @@ Page({
     password: '',
     defaultPassword: storage.DEFAULT_PASSWORD,
     loading: false,
+    version: app.globalData.VERSION,
   },
 
   onLoad() {

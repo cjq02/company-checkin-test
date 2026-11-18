@@ -111,6 +111,13 @@ button::after {
   margin-top: 16rpx;
 }
 
+.version {
+  font-size: 22rpx;
+  color: #b0b4ba;
+  text-align: center;
+  margin-top: 40rpx;
+}
+
 .empty {
   font-size: 28rpx;
   color: #9aa0a6;

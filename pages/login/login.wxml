@@ -42,4 +42,6 @@
     <button class="primary-btn" bindtap="onLogin">登录</button>
     <view class="hint">测试密码默认：{{defaultPassword}}</view>
   </view>
+
+  <view class="version">版本 v{{version}}</view>
 </view>
