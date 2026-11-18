@@ -37,8 +37,9 @@ function request(path, method, data) {
           reject({ statusCode: res.statusCode, message })
         }
       },
-      fail() {
-        reject({ message: '无法连接服务器，请检查网络' })
+      fail(err) {
+        const detail = err && err.errMsg ? err.errMsg : '未知错误'
+        reject({ message: '请求失败：' + detail })
       },
     })
   })
