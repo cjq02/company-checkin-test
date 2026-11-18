@@ -1,4 +1,5 @@
 const storage = require('../../utils/storage')
+const api = require('../../utils/api')
 
 Page({
   data: {
@@ -6,13 +7,12 @@ Page({
     username: 'employee',
     password: '',
     defaultPassword: storage.DEFAULT_PASSWORD,
+    loading: false,
   },
 
   onLoad() {
-    // 已登录则直接跳转到对应首页
-    const user = storage.getCurrentUser()
-    if (user) {
-      this.redirectByRole(user.role)
+    if (storage.getToken() && storage.getUser()) {
+      this.redirectByRole(storage.getUser().role)
     }
   },
 
@@ -35,20 +35,31 @@ Page({
   },
 
   onLogin() {
-    const password = this.data.password
-    if (!password) {
+    if (this.data.loading) {
+      return
+    }
+    if (!this.data.password) {
       wx.showToast({ title: '请输入密码', icon: 'none' })
       return
     }
-    if (password !== storage.DEFAULT_PASSWORD) {
-      wx.showToast({ title: '密码错误', icon: 'none' })
-      return
-    }
 
-    const role = this.data.role
-    const name = this.data.username.trim() || role
-    storage.setCurrentUser({ role, name, loginAt: Date.now() })
-    this.redirectByRole(role)
+    this.setData({ loading: true })
+    api
+      .login({
+        role: this.data.role,
+        username: this.data.username.trim() || this.data.role,
+        password: this.data.password,
+      })
+      .then((res) => {
+        storage.setToken(res.token)
+        storage.setUser({ role: res.role, username: res.username })
+        this.setData({ loading: false })
+        this.redirectByRole(res.role)
+      })
+      .catch((err) => {
+        this.setData({ loading: false })
+        wx.showToast({ title: err.message || '登录失败', icon: 'none' })
+      })
   },
 
   redirectByRole(role) {

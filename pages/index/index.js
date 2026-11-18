@@ -1,4 +1,5 @@
 const storage = require('../../utils/storage')
+const api = require('../../utils/api')
 const locationUtil = require('../../utils/location')
 const timeUtil = require('../../utils/time')
 
@@ -13,23 +14,25 @@ Page({
     canCheckIn: false,
     checkedToday: false,
     locationError: '',
+    currentLat: null,
+    currentLng: null,
   },
 
   onLoad() {
-    const user = storage.getCurrentUser()
-    if (!user || user.role !== storage.ROLE.EMPLOYEE) {
+    const user = storage.getUser()
+    if (!storage.getToken() || !user || user.role !== storage.ROLE.EMPLOYEE) {
       wx.redirectTo({ url: '/pages/login/login' })
       return
     }
-    this.setData({ point: storage.getCheckinPoint() })
     this.startTimer()
+    this.loadPoint()
     this.refreshLocation()
   },
 
   onShow() {
-    this.setData({ point: storage.getCheckinPoint() })
     this.startTimer()
-    this.refreshLocation()
+    this.loadPoint()
+    this.refreshCheckStatus()
   },
 
   onHide() {
@@ -61,6 +64,24 @@ Page({
     })
   },
 
+  loadPoint() {
+    api
+      .getPoint()
+      .then((point) => {
+        this.setData({ point })
+        this.updateCanCheckIn()
+        this.refreshLocation()
+      })
+      .catch((err) => {
+        if (err.statusCode === 404) {
+          this.setData({ point: null })
+          this.updateCanCheckIn()
+        } else {
+          wx.showToast({ title: err.message || '加载打卡点失败', icon: 'none' })
+        }
+      })
+  },
+
   refreshLocation() {
     wx.getLocation({
       type: 'gcj02',
@@ -78,12 +99,13 @@ Page({
           inRange = distance <= point.radius
         }
         this.setData({
+          currentLat: res.latitude,
+          currentLng: res.longitude,
           distance,
           distanceText: locationUtil.formatDistance(distance),
           inRange,
           locationError: '',
         })
-        this.refreshCheckStatus()
         this.updateCanCheckIn()
       },
       fail: () => {
@@ -97,18 +119,24 @@ Page({
   },
 
   refreshCheckStatus() {
-    const user = storage.getCurrentUser()
+    const user = storage.getUser()
     if (!user) {
       return
     }
-    const today = timeUtil.formatDate(new Date())
-    const checkedToday = storage.getRecords().some((record) => {
-      return (
-        record.userName === user.name &&
-        timeUtil.formatDate(new Date(record.timestamp)) === today
-      )
-    })
-    this.setData({ checkedToday })
+    api
+      .getRecords()
+      .then((records) => {
+        const today = timeUtil.formatDate(new Date())
+        const checkedToday = records.some((record) => {
+          return (
+            record.username === user.username &&
+            timeUtil.formatDate(new Date(record.created_at * 1000)) === today
+          )
+        })
+        this.setData({ checkedToday })
+        this.updateCanCheckIn()
+      })
+      .catch(() => {})
   },
 
   updateCanCheckIn() {
@@ -130,18 +158,23 @@ Page({
       wx.showToast({ title: '今日已打卡', icon: 'none' })
       return
     }
+    if (this.data.currentLat === null || this.data.currentLng === null) {
+      wx.showToast({ title: '定位尚未完成', icon: 'none' })
+      return
+    }
 
-    const user = storage.getCurrentUser()
-    storage.addRecord({
-      id: Date.now().toString(),
-      userName: user.name,
-      timestamp: Date.now(),
-      pointName: this.data.point.name,
-      distance: Math.round(this.data.distance || 0),
-    })
-    wx.showToast({ title: '打卡成功', icon: 'success' })
-    this.refreshCheckStatus()
-    this.updateCanCheckIn()
+    api
+      .checkin({
+        latitude: this.data.currentLat,
+        longitude: this.data.currentLng,
+      })
+      .then(() => {
+        wx.showToast({ title: '打卡成功', icon: 'success' })
+        this.refreshCheckStatus()
+      })
+      .catch((err) => {
+        wx.showToast({ title: err.message || '打卡失败', icon: 'none' })
+      })
   },
 
   onRefreshLocation() {
@@ -153,7 +186,9 @@ Page({
   },
 
   onLogout() {
-    storage.clearCurrentUser()
+    api.logout().catch(() => {})
+    storage.clearToken()
+    storage.clearUser()
     wx.redirectTo({ url: '/pages/login/login' })
   },
 })

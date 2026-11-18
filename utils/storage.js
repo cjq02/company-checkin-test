@@ -1,14 +1,7 @@
 /**
- * 本地缓存存储层
- * 说明：微信小程序无原生 SQLite，本演示用 wx.setStorageSync 模拟持久化。
- * 所有 key / 角色 / 默认值集中为常量，避免魔法值。
+ * 本地会话存储 + 常量定义
+ * 说明：业务数据已改为走后端 API（utils/api.js），本地只保存 token 和当前用户信息。
  */
-
-const STORAGE_KEYS = {
-  CURRENT_USER: 'checkin_current_user',
-  CHECKIN_POINT: 'checkin_point',
-  RECORDS: 'checkin_records',
-}
 
 const ROLE = {
   ADMIN: 'admin',
@@ -18,79 +11,43 @@ const ROLE = {
 const DEFAULT_PASSWORD = '123456'
 const DEFAULT_RADIUS_METERS = 200
 
-function get(key, defaultValue) {
-  try {
-    const value = wx.getStorageSync(key)
-    if (value === '' || value === undefined || value === null) {
-      return defaultValue
-    }
-    return value
-  } catch (e) {
-    return defaultValue
-  }
+const SESSION_KEYS = {
+  TOKEN: 'checkin_token',
+  USER: 'checkin_user',
 }
 
-function set(key, value) {
-  try {
-    wx.setStorageSync(key, value)
-  } catch (e) {
-    // 忽略存储异常
-  }
+function getToken() {
+  return wx.getStorageSync(SESSION_KEYS.TOKEN) || ''
 }
 
-function remove(key) {
-  try {
-    wx.removeStorageSync(key)
-  } catch (e) {
-    // 忽略存储异常
-  }
+function setToken(token) {
+  wx.setStorageSync(SESSION_KEYS.TOKEN, token)
 }
 
-function getCurrentUser() {
-  return get(STORAGE_KEYS.CURRENT_USER, null)
+function clearToken() {
+  wx.removeStorageSync(SESSION_KEYS.TOKEN)
 }
 
-function setCurrentUser(user) {
-  set(STORAGE_KEYS.CURRENT_USER, user)
+function getUser() {
+  return wx.getStorageSync(SESSION_KEYS.USER) || null
 }
 
-function clearCurrentUser() {
-  remove(STORAGE_KEYS.CURRENT_USER)
+function setUser(user) {
+  wx.setStorageSync(SESSION_KEYS.USER, user)
 }
 
-function getCheckinPoint() {
-  return get(STORAGE_KEYS.CHECKIN_POINT, null)
-}
-
-function setCheckinPoint(point) {
-  set(STORAGE_KEYS.CHECKIN_POINT, point)
-}
-
-function getRecords() {
-  return get(STORAGE_KEYS.RECORDS, [])
-}
-
-function addRecord(record) {
-  const records = getRecords()
-  records.unshift(record)
-  set(STORAGE_KEYS.RECORDS, records)
-}
-
-function clearRecords() {
-  set(STORAGE_KEYS.RECORDS, [])
+function clearUser() {
+  wx.removeStorageSync(SESSION_KEYS.USER)
 }
 
 module.exports = {
-  STORAGE_KEYS,
   ROLE,
   DEFAULT_PASSWORD,
   DEFAULT_RADIUS_METERS,
-  getCurrentUser,
-  setCurrentUser,
-  clearCurrentUser,
-  getCheckinPoint,
-  setCheckinPoint,
-  getRecords,
-  addRecord,
-  clearRecords,
+  getToken,
+  setToken,
+  clearToken,
+  getUser,
+  setUser,
+  clearUser,
 }
