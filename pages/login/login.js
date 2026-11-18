@@ -7,7 +7,7 @@ Page({
   data: {
     role: storage.ROLE.EMPLOYEE,
     username: 'employee',
-    password: '',
+    password: storage.DEFAULT_PASSWORD,
     defaultPassword: storage.DEFAULT_PASSWORD,
     loading: false,
     version: app.globalData.VERSION,
