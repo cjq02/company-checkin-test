@@ -5,7 +5,7 @@
  * 或在开发者工具「详情 → 本地设置」勾选「不校验合法域名...」。
  */
 
-const BASE_URL = 'http://43.138.230.64:3000'
+const BASE_URL = 'http://43.138.230.64:3100'
 
 const storage = require('./storage')
 
