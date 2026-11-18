@@ -1,0 +1,28 @@
+<view class="container">
+  <view class="header">
+    <view class="title">打卡记录</view>
+    <view class="subtitle">共 {{records.length}} 条记录</view>
+  </view>
+
+  <block wx:if="{{records.length > 0}}">
+    <view class="record-card" wx:for="{{records}}" wx:key="id">
+      <view class="record-row">
+        <text class="record-name">{{item.userName}}</text>
+        <text class="record-badge">已打卡</text>
+      </view>
+      <view class="record-line">时间：{{item.timeText}}</view>
+      <view class="record-line">地点：{{item.pointName}}</view>
+      <view class="record-line">距离：{{item.distanceText}}</view>
+    </view>
+  </block>
+
+  <block wx:else>
+    <view class="card">
+      <view class="empty">暂无打卡记录</view>
+    </view>
+  </block>
+
+  <button class="danger-btn" wx:if="{{isAdmin && records.length > 0}}" bindtap="onClearRecords">
+    清空打卡记录
+  </button>
+</view>

@@ -1,0 +1,22 @@
+{
+  "pages": [
+    "pages/login/login",
+    "pages/admin/admin",
+    "pages/index/index",
+    "pages/records/records"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#1a73e8",
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "打卡助手",
+    "backgroundColor": "#f5f6f8"
+  },
+  "permission": {
+    "scope.userLocation": {
+      "desc": "用于判断你是否在打卡范围内"
+    }
+  },
+  "requiredPrivateInfos": ["getLocation", "chooseLocation"],
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

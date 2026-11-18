@@ -1,0 +1,45 @@
+<view class="container">
+  <view class="header">
+    <view class="title">打卡助手</view>
+    <view class="subtitle">测试版 · 请选择角色登录</view>
+  </view>
+
+  <view class="card">
+    <view class="role-switch">
+      <view
+        class="role-item {{role === 'employee' ? 'active' : ''}}"
+        bindtap="onSelectRole"
+        data-role="employee"
+      >员工</view>
+      <view
+        class="role-item {{role === 'admin' ? 'active' : ''}}"
+        bindtap="onSelectRole"
+        data-role="admin"
+      >管理员</view>
+    </view>
+
+    <view class="field">
+      <text class="label">账号</text>
+      <input
+        class="input"
+        placeholder="请输入账号"
+        value="{{username}}"
+        bindinput="onUsernameInput"
+      />
+    </view>
+
+    <view class="field">
+      <text class="label">密码</text>
+      <input
+        class="input"
+        password
+        placeholder="请输入密码"
+        value="{{password}}"
+        bindinput="onPasswordInput"
+      />
+    </view>
+
+    <button class="primary-btn" bindtap="onLogin">登录</button>
+    <view class="hint">测试密码默认：{{defaultPassword}}</view>
+  </view>
+</view>

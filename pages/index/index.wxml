@@ -1,0 +1,41 @@
+<view class="container">
+  <view class="clock-card">
+    <view class="clock-time">{{nowTime}}</view>
+    <view class="clock-date">{{nowDate}}</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">打卡状态</view>
+
+    <block wx:if="{{!point}}">
+      <view class="status warn">管理员尚未设置打卡点</view>
+    </block>
+
+    <block wx:else>
+      <view class="info-row">
+        <text class="k">打卡点</text>
+        <text class="v">{{point.name}}</text>
+      </view>
+      <view class="info-row">
+        <text class="k">当前距离</text>
+        <text class="v">{{distanceText}}</text>
+      </view>
+      <view class="info-row">
+        <text class="k">允许半径</text>
+        <text class="v">{{point.radius}} m</text>
+      </view>
+      <view class="status {{inRange ? 'ok' : 'warn'}}">
+        {{inRange ? '✓ 在打卡范围内，可以打卡' : '✗ 不在打卡范围内'}}
+      </view>
+    </block>
+
+    <button class="primary-btn" disabled="{{!canCheckIn}}" bindtap="onCheckIn">
+      {{checkedToday ? '今日已打卡' : '立即打卡'}}
+    </button>
+    <view class="hint" wx:if="{{locationError}}">{{locationError}}</view>
+    <button class="ghost-btn" bindtap="onRefreshLocation">刷新定位</button>
+  </view>
+
+  <button class="ghost-btn" bindtap="onViewRecords">查看打卡记录</button>
+  <button class="logout-btn" bindtap="onLogout">退出登录</button>
+</view>

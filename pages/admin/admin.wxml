@@ -1,0 +1,50 @@
+<view class="container">
+  <view class="header">
+    <view class="title">管理员设置</view>
+    <view class="subtitle">设置打卡点，员工将在范围内打卡</view>
+  </view>
+
+  <view class="card">
+    <view class="section-title">打卡点设置</view>
+
+    <block wx:if="{{point}}">
+      <view class="info-row">
+        <text class="k">地点</text>
+        <text class="v">{{point.name}}</text>
+      </view>
+      <view class="info-row">
+        <text class="k">地址</text>
+        <text class="v">{{point.address || '—'}}</text>
+      </view>
+      <view class="info-row">
+        <text class="k">坐标</text>
+        <text class="v">{{point.latitude}}, {{point.longitude}}</text>
+      </view>
+
+      <view class="field" style="margin-top: 28rpx">
+        <text class="label">允许半径（米）</text>
+        <input
+          class="input"
+          type="number"
+          value="{{radius}}"
+          bindinput="onRadiusInput"
+        />
+      </view>
+      <button class="primary-btn" bindtap="onSaveRadius">保存半径</button>
+    </block>
+
+    <block wx:else>
+      <view class="empty">尚未设置打卡点，请先在地图上选点</view>
+    </block>
+
+    <button class="ghost-btn" bindtap="onChooseLocation">地图选点</button>
+  </view>
+
+  <view class="card">
+    <view class="section-title">数据管理</view>
+    <button class="ghost-btn" bindtap="onViewRecords">查看打卡记录</button>
+    <button class="danger-btn" bindtap="onClearRecords">清空打卡记录</button>
+  </view>
+
+  <button class="logout-btn" bindtap="onLogout">退出登录</button>
+</view>
