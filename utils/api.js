@@ -1,15 +1,15 @@
 /**
  * 后端 API 客户端
  *
- * 当前：走公网 HTTPS https://jacquin.top/checkin-api → nginx 反代到后端 3100 端口。
- * 手机在任何网络都能访问（无需 SSH 隧道 / 内网穿透）。
+ * 当前（备案审核中）：走本地 SSH 隧道，局域网 IP 192.168.31.10:13100 → 服务器 3100。
+ * 隧道命令：ssh -N -L 0.0.0.0:13100:127.0.0.1:3100 cjq.tencent
+ * 手机需与电脑同一 WiFi，真机调试弹窗勾选「局域网模式」。
  *
- * 备案审核中：真机调试需勾选「详情 → 本地设置 → 不校验合法域名...」。
- * 备案通过后：在微信后台把 https://jacquin.top 加到 request合法域名，
- * 即可发布体验版，无需再改代码。
+ * 备案通过、微信后台加好 request合法域名 https://jacquin.top 后，
+ * 再切回：'https://jacquin.top/checkin-api'（nginx 已配好反代，证书就绪）。
  */
 
-const BASE_URL = 'https://jacquin.top/checkin-api'
+const BASE_URL = 'http://192.168.31.10:13100'
 
 const storage = require('./storage')
 
